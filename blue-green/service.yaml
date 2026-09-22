@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  labels:
+    app: demo
+spec:
+  # Flip version: blue <-> green to promote. Zero-downtime: the new color
+  # must pass readiness probes before the switch.
+  selector:
+    app: demo
+    version: blue
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

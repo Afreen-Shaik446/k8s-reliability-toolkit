@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-green
+  labels:
+    app: demo
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo
+      version: green
+  template:
+    metadata:
+      labels:
+        app: demo
+        version: green
+    spec:
+      containers:
+        - name: app
+          image: demo-app:2.0.0 # new version under test
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
