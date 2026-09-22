@@ -1,0 +1,49 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: demo-default-deny
+spec:
+  podSelector:
+    matchLabels:
+      app: demo
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: demo-allow
+spec:
+  podSelector:
+    matchLabels:
+      app: demo
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow HTTP from the ingress controller (label per your setup)
+    - ports:
+        - port: 8080
+          protocol: TCP
+      from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+    # Allow traffic from pods in the same namespace (e.g. internal callers)
+    - ports:
+        - port: 8080
+          protocol: TCP
+      from:
+        - podSelector: {}
+  egress:
+    # Allow DNS
+    - ports:
+        - port: 53
+          protocol: UDP
+      to:
+        - namespaceSelector: {}
+    # Allow outbound HTTPS (e.g. external APIs)
+    - ports:
+        - port: 443
+          protocol: TCP

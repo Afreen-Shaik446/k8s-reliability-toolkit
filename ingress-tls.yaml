@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-tls
+  annotations:
+    # Example for cert-manager; replace with your issuer.
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - demo.example.com # <-- replace with your real host
+      secretName: demo-tls
+  rules:
+    - host: demo.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo
+                port:
+                  number: 80
