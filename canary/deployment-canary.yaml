@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-canary
+  labels:
+    app: demo
+    track: canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+      track: canary
+  template:
+    metadata:
+      labels:
+        app: demo
+        track: canary
+    spec:
+      containers:
+        - name: app
+          image: demo-app:2.0.0 # canary candidate
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

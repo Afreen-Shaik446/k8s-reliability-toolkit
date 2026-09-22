@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo
+  labels:
+    app: demo
+spec:
+  # Selects BOTH stable and canary pods (no track label in selector)
+  # for intra-cluster traffic. Weight-based splitting for external
+  # traffic is done by ingress-canary.yaml -> service-canary.yaml.
+  selector:
+    app: demo
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
